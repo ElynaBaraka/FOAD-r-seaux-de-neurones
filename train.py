@@ -15,17 +15,25 @@ def evaluate_genome(genome, config):
     env = FlappyBirdEnv()
     state = env.reset()
     done = False
+    jumps = 0
     
     while not done:
         output = net.activate(state)
         action = 1 if output[0] > 0.5 else 0
+        if action == 1 :
+            jumps += 1
         state, reward, done = env.step(action)
     # frames survécus + 1000 * tuyaux franchis
     return env.frames + 1000 * env.score
 
 def eval_genomes(genomes, config):
+    best_score_gen=0
     for genome_id, genome in genomes:
         genome.fitness = evaluate_genome(genome, config)
+        score= (genome.fitness - 0) // 500
+        if score > best_score_gen:
+            best_score_gen = score
+    print(f"Meilleur score (tuyaux) cette generation : {int(best_score_gen)}")
 
 def run():
     config = neat.Config(
